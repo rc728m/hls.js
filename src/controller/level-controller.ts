@@ -71,10 +71,6 @@ export default class LevelController extends BasePlaylistController {
     if (levels) {
       levels.forEach(level => {
         level.loadError = 0;
-        const levelDetails = level.details;
-        if (levelDetails?.live) {
-          level.details = undefined;
-        }
       });
     }
 
