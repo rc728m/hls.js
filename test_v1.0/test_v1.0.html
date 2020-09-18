@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hls.js Test Player v1.0</title>
+    </head>
+
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <!-- Or if you want a more recent alpha version -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@alpha"></script> -->
+
+        <center>
+            <h1>HLS.js Test Player v1.0</h1>
+            <div id="support"></div>
+            <p>Video: Llama Drama (HLS, Duration - 1:30, HLS, Animated, 4k Quality)</p>
+            <video height="600" id="video" controls></video>
+            <div>Start time in seconds:</div> 
+            <div id="time"></div>
+            <br />
+            <p>Video: Sintel (HLS, Duration - 14:48, HLS, Animated)</p>
+            <video height="600" id="video2" controls></video>
+            <div>Start time in seconds:</div> 
+            <div id="time2"></div>
+            *Does not work in chrome
+            <div><b>DASH VIDEO NOT SUPPORTED BY HLS.js</b></div>
+        </center>       
+
+        <script>
+            //set variables and start the timer
+            var video = document.getElementById('video');
+            var video2 = document.getElementById('video2');
+            var videoSrc = 'http://amssamples.streaming.mediaservices.windows.net/634cd01c-6822-4630-8444-8dd6279f94c6/CaminandesLlamaDrama4K.ism/manifest(format=m3u8-aapl)';   
+            var videoSrc2 = 'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8';
+            var t0 = 0;
+            var t2 = 0;
+            //
+            // First check for native browser HLS support
+            //
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                document.getElementById("support").innerHTML = "(This browser offers native HLS support)";
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.muted = true;
+                    video.pause();
+                });
+                video.onclick = function(){t0 = performance.now();};
+                video.addEventListener("playing", function() {
+                    var t1 = 0;
+                    t1 = performance.now();
+                    var timeDiff = ((t1 - t0)/1000).toFixed(20);
+                    document.getElementById("time").innerHTML = timeDiff;
+                });
+            //
+            // Stop the timer when video starts playing and convert miliseconds to seconds
+            //
+                            
+            //
+            // If no native HLS support, check if hls.js is supported
+            //
+            } else if (Hls.isSupported()) {
+                document.getElementById("support").innerHTML = "(This browser does not offer native HLS support)";
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.muted = true;
+                    video.onplay = function(){
+                        t0 = 0;
+                        t0 = performance.now();
+                        video.play();
+                    };
+                    
+                });
+                
+                video.addEventListener("playing", function() {
+                    var t1 = 0
+                    t1 = performance.now();
+                    var timeDiff = (t1 - t0)/1000;
+                    document.getElementById("time").innerHTML = timeDiff;
+                });
+            }
+
+            if (video2.canPlayType('application/vnd.apple.mpegurl')) {
+                
+                video2.src = videoSrc2;
+                video2.addEventListener('loadedmetadata', function() {
+                    video2.muted = true;
+                    video2.pause();
+                });
+                video2.onclick = function(){t2 = performance.now();};
+                video2.addEventListener("playing", function() {
+                    var t3 = 0;
+                    t3 = performance.now();
+                    var timeDiff2 = ((t3 - t2)/1000).toFixed(20);
+                    document.getElementById("time2").innerHTML = timeDiff2;
+                });
+            //
+            // Stop the timer when video starts playing and convert miliseconds to seconds
+            //
+                            
+            //
+            // If no native HLS support, check if hls.js is supported
+            //
+            } else if (Hls.isSupported()) {
+                
+                var hls2 = new Hls();
+                hls2.loadSource(videoSrc2);
+                hls2.attachMedia(video2);
+                
+                hls2.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video2.muted = true;
+                    video2.onplay = function(){
+                        t2 = 0;
+                        t2 = performance.now();
+                        video2.play();
+                    };
+                    
+                });
+                
+                video.addEventListener("playing", function() {
+                    var t3 = 0
+                    t3 = performance.now();
+                    var timeDiff2 = ((t3 - t2)/1000);
+                    document.getElementById("time2").innerHTML = timeDiff2;
+                });
+            }
+
+        </script>
+        
+    </body>
+</html>
