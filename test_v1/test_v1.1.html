@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hls.js Test Player v1.1</title>
+    </head>
+
+    <body>
+        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+        <!-- Or if you want a more recent alpha version -->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@alpha"></script> -->
+
+        <center>
+            <h1>HLS.js Test Player v1.1</h1>
+            <div id="support"></div>
+            <br />
+            <h3>Choose a Video</h3>
+            <a href="#" id="src1" onclick="vidSelect('https://att-advavtech-output.s3.amazonaws.com/csula/At_S_SPR_1080p24.m3u8')">Saving Private Ryan</a><br />
+            <a href="#" id="src1" onclick="vidSelect('https://att-advavtech-output.s3.amazonaws.com/csula/CNN-2597-03-131.m3u8')">CNN</a><br />
+            <a href="#" id="src1" onclick="vidSelect('https://att-advavtech-output.s3.amazonaws.com/csula/El_S_WVB_1080p60.m3u8')">Beach Volleyball</a><br />
+            <a href="#" id="src1" onclick="vidSelect('https://att-advavtech-output.s3.amazonaws.com/csula/PJMasks_1080p24.m3u8')">PJ Masks</a>
+            <br>
+            <br>
+            <video height="600" id="video" controls></video>
+            <div id="time"></div> 
+            <div id="change"></div> 
+            <p>Video Resolution: <span id="resolution"><span id="resolutionWidth"></span>x<span id="resolutionHeight"></span></span></p>
+            
+            <br />
+            <!-- <p>Video: Sintel (HLS, Duration - 14:48, HLS, Animated)</p> -->
+            <div><b>DASH VIDEO NOT SUPPORTED BY HLS.js</b></div>
+              
+        </center>       
+
+        <script>
+            var video = document.getElementById('video');
+            var videoSrc = "https://att-advavtech-output.s3.amazonaws.com/csula/At_S_SPR_1080p24.m3u8"; 
+            var t0 = 0;
+            //
+            // First check for native browser HLS support
+            //
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                document.getElementById("support").innerHTML = "(This browser offers native HLS support)";
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.muted = true;
+                    video.pause();
+                });
+                video.onclick = function(){t0 = performance.now();};
+                video.addEventListener("playing", function() {
+                    var t1 = 0;
+                    t1 = performance.now();
+                    var timeDiff = ((t1 - t0)/1000).toFixed(5);
+                    document.getElementById("time").innerHTML = "VST: " + timeDiff + " seconds";
+                });
+                var heightElement = document.getElementById('resolutionHeight');
+                var widthElement = document.getElementById('resolutionWidth');
+                window.setInterval(function(){
+                    var t2 = 0;
+                    heightElement.innerText = video.videoHeight;
+                    widthElement.innerText = video.videoWidth;    
+                }, 1000);      
+                
+            //
+            // If no native HLS support, check if hls.js is supported
+            //
+            } else if (Hls.isSupported()) {
+                document.getElementById("support").innerHTML = "(This browser does not offer native HLS support)";
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.muted = true;
+                    video.onplay = function(){
+                        t0 = 0;
+                        t0 = performance.now();
+                        video.play();
+                    };
+                });
+                
+                video.addEventListener("playing", function() {
+                    var t1 = 0
+                    t1 = performance.now();
+                    var timeDiff = ((t1 - t0)/1000).toFixed(5);
+                    document.getElementById("time").innerHTML = "VST: " + timeDiff + " seconds";
+                });
+                var heightElement = document.getElementById('resolutionHeight');
+                var widthElement = document.getElementById('resolutionWidth');
+                window.setInterval(function(){
+                    var t2 = 0;
+                    heightElement.innerText = video.videoHeight;
+                    widthElement.innerText = video.videoWidth;    
+                }, 1000);
+            }
+            function vidSelect(source){
+            //set variables and start the timer
+            var video = document.getElementById('video');
+            window.setInterval(function(){
+                heightElement.innerText = video.videoHeight;
+                widthElement.innerText = video.videoWidth;
+            }, 1000);
+            var videoSrc = source;   
+            var t0 = 0;
+            //
+            // First check for native browser HLS support
+            //
+            if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                document.getElementById("support").innerHTML = "(This browser offers native HLS support)";
+                video.src = videoSrc;
+                video.addEventListener('loadedmetadata', function() {
+                    video.muted = true;
+                    video.pause();
+                });
+                video.onclick = function(){t0 = performance.now();};
+                video.addEventListener("playing", function() {
+                    var t1 = 0;
+                    t1 = performance.now();
+                    var timeDiff = ((t1 - t0)/1000).toFixed(5);
+                    document.getElementById("time").innerHTML = "VST: " + timeDiff + " seconds";
+                });
+                var heightElement = document.getElementById('resolutionHeight');
+                var widthElement = document.getElementById('resolutionWidth');
+                window.setInterval(function(){
+                    var t2 = 0;
+                    heightElement.innerText = video.videoHeight;
+                    widthElement.innerText = video.videoWidth;    
+                }, 1000);
+            //
+            // Stop the timer when video starts playing and convert miliseconds to seconds
+            //
+                            
+            //
+            // If no native HLS support, check if hls.js is supported
+            //
+            } else if (Hls.isSupported()) {
+                document.getElementById("support").innerHTML = "(This browser does not offer native HLS support)";
+                var hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.muted = true;
+                    video.onplay = function(){
+                        t0 = 0;
+                        t0 = performance.now();
+                        video.play();
+                    };
+                });
+                
+                video.addEventListener("playing", function() {
+                    var t1 = 0
+                    t1 = performance.now();
+                    var timeDiff = ((t1 - t0)/1000).toFixed(5);
+                    document.getElementById("time").innerHTML = "VST: " + timeDiff + " seconds";
+                });
+                var heightElement = document.getElementById('resolutionHeight');
+                var widthElement = document.getElementById('resolutionWidth');
+                window.setInterval(function(){
+                    var t2 = 0;
+                    heightElement.innerText = video.videoHeight;
+                    widthElement.innerText = video.videoWidth;    
+                }, 1000);
+            }
+
+          }
+
+        </script>
+        
+    </body>
+</html>
