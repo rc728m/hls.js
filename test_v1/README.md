@@ -13,7 +13,7 @@ Initial: v1.0
 Directions:
 -- First, copy the address of the repository to the clipboard (top left of repo)
 -- Next, in terminal, cd into the directory of your choice to house the code
--- Next use git clone and clone the repository
+-- Next use git clone -b <branch> <remote_repo> to clone the proper branch
 -- Next, locate the directory where you cloned the repo to
 -- Next open the HLS.js folder and the test_v1.0 folder
 
