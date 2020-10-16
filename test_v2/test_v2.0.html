@@ -76,8 +76,8 @@
   var configs = {
     autoStartLoad:true,
     debug:false,
-    // maxBufferLength: 0.1,
-    // maxBufferSize: 10*100,  
+    maxBufferLength: 0.1,
+    maxBufferSize: 10*100,  
   };
 
   // Initialize video player
@@ -124,21 +124,21 @@
       document.getElementById("VSTinitial").innerHTML = timeDiff.toFixed(4); 
       document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); 
       firstPlay = false;
-    }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); }
+    }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4);}
         
     if (boolPaused == false){
       totalBufferTime += timeDiff;
       updateMetrics();
+      document.getElementById("bufferCount").innerHTML = bufferCount;
+      document.getElementById("bufferDuration").innerHTML = timeDiff.toFixed(4) + " seconds";
+      document.getElementById("totalBufferTime").innerHTML = totalBufferTime.toFixed(4) + " seconds";
     }
     else {
       totalPauseTime += timeDiff;
       document.getElementById("totalPauseTime").innerHTML = totalPauseTime.toFixed(4) + " seconds";
       boolPaused = false;
-    }            
-      document.getElementById("bufferCount").innerHTML = bufferCount;
-      document.getElementById("bufferDuration").innerHTML = timeDiff.toFixed(4) + " seconds";
-      document.getElementById("totalBufferTime").innerHTML = totalBufferTime.toFixed(4) + " seconds";
       document.getElementById("pauseCount").innerHTML = pauseCount;
+    }            
   });
   
   // Update Metrics function
@@ -221,7 +221,7 @@
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
-  var fps = 0 ; 
+  var fps = 0; 
   var decodedFrames = 0;  
   var droppedFrames = 0; 
   var lastDecodedFrames = 0;
