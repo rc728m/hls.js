@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hls.js Test Player v1.1</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+      <!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@0.14.13/dist/hls.js"></script> -->
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar justify-content-center"><h3>Hls.js Test Player v2.0</h3></div>
+        <h5 class="">Playlist</h5>
+        <ul class="nav nav-pills pb-3">
+          <li class="nav-link active" id="src1" onclick="PlaylistClicked('https://att-advavtech-output.s3.amazonaws.com/csula/At_S_SPR_1080p24.m3u8',  this.id)">Saving Private Ryan (Video 1)</li>
+          <li class="nav-link" id="src2" onclick="PlaylistClicked('https://att-advavtech-output.s3.amazonaws.com/csula/PJMasks_1080p24.m3u8', this.id)">PJ Masks (Video 2)</li>
+          <li class="nav-link" id="src3" onclick="PlaylistClicked('https://att-advavtech-output.s3.amazonaws.com/csula/CNN-2597-03-131.m3u8', this.id)">CNN (Video 3)</li>
+          <li class="nav-link" id="src4" onclick="PlaylistClicked('https://att-advavtech-output.s3.amazonaws.com/csula/El_S_WVB_1080p60.m3u8', this.id)">Beach Volleyball (Video 4)</li>
+        </ul>
+      <div class="row">
+        <div class="mx-auto col-9"><video width="100%"  id="video" controls autoplay></video></div>
+        <div class="col-3">
+          <div>Initial Startup Time: <span id="VSTinitial">0</span></div>
+          <div>Video Start Time: <span id="VSTcontinuous">0</span></div>           
+          <div>Video Resolution: <span id="resolution">0</span></div>
+          <div>Buffer Count: <span id="bufferCount">0</span></div>
+          <div>Buffer Duration: <span id="bufferDuration">0</span></div>
+          <div>Total Buffer Time: <span id="totalBufferTime">0</span></div>      
+          <div>Buffer Ratio: <span id="demo">0</span></div>
+          <div>Play Time: <span id="time3">0</span></div>
+          <div>Pause Count: <span id="pauseCount">0</span></div>
+          <div>Total Pause Time: <span id="totalPauseTime">0</span></div>
+          <div>Estimated Frames Per Second: <span id="Fps">0</span></div>      
+          <div>Total Decoded Frames: <span id="DecodedFps">0</span></div>
+          <div>Dropped Frames: <span id="DroppedFps">0</span></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+  // Variable Decleration
+  // Timers
+  var initialTime = 0;
+  var pauseTime = 0;
+  var totalPauseTime = 0;
+  var totalPlayTime = 0;
+  var totalBufferTime = 0;
+  var bufferStartTime = 0;
+  var bufferEndTime = 0;
+  var bufferSeconds = 0;
+  var t0 = 0; 
+  var t1 = 0; 
+  var t2 = 0; 
+  var t3 = 0; 
+  var timeDiff = 0;   
+
+  // Counters
+  var bufferCount = 0;
+  var pauseCount = 0;
+
+  // Bools
+  var boolPaused = false; 
+  var isBuffering = false;
+  var boolCanPlay = false;
+  var boolIsSupported = false;
+  var boolWaiting = false;
+  var bufferedDuringLast5Seconds = false;
+  var playd = false;
+  var firstPlay = true;  
+
+  // Hls init
+  var hls;   
+  var video = document.getElementById('video');
+  var videoSrc ='https://att-advavtech-output.s3.amazonaws.com/csula/At_S_SPR_1080p24.m3u8';
+  // Video configs
+  var configs = {
+    autoStartLoad:true,
+    debug:false,
+    // maxBufferLength: 0.1,
+    // maxBufferSize: 10*100,  
+  };
+
+  // Initialize video player
+  window.onload = function init() {
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      boolCanPlay = true;
+      video.src = videoSrc;
+    } else if (Hls.isSupported()) {
+      boolIsSupported = true;
+      hls = new Hls(configs);
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.muted = true;
+        video.play();
+      });     
+    }
+  }
+
+  // Paused event function
+  video.addEventListener("pause", function(){
+    t0 = performance.now();
+    pauseCount++;
+    updateMetrics();
+    boolPaused = true; 
+  });
+
+  // Waiting event function
+  video.addEventListener("waiting", function(){
+    t0 = performance.now();
+    bufferCount++;
+    bufferedDuringLast5Seconds = true;
+    boolWaiting = true;
+    updateMetrics();
+  });
+
+  // Playing event function
+  video.addEventListener("playing", function(){
+    boolWaiting = false;
+    t1 = performance.now();
+    timeDiff = (t1-t0) / 1000;
+    if(firstPlay){
+      initialTime = t0 / 1000;
+      document.getElementById("VSTinitial").innerHTML = timeDiff.toFixed(4); 
+      document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); 
+      firstPlay = false;
+    }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); }
+        
+    if (boolPaused == false){
+      totalBufferTime += timeDiff;
+      updateMetrics();
+    }
+    else {
+      totalPauseTime += timeDiff;
+      document.getElementById("totalPauseTime").innerHTML = totalPauseTime.toFixed(4) + " seconds";
+      boolPaused = false;
+    }            
+      document.getElementById("bufferCount").innerHTML = bufferCount;
+      document.getElementById("bufferDuration").innerHTML = timeDiff.toFixed(4) + " seconds";
+      document.getElementById("totalBufferTime").innerHTML = totalBufferTime.toFixed(4) + " seconds";
+      document.getElementById("pauseCount").innerHTML = pauseCount;
+  });
+  
+  // Update Metrics function
+  function updateMetrics() {
+    currentTime = performance.now() / 1000;
+    totalPlayTime = currentTime - initialTime - totalPauseTime;
+    document.getElementById("time3").innerHTML = totalPlayTime.toFixed(4) + " seconds";
+    document.getElementById("demo").innerHTML = ((totalBufferTime / totalPlayTime) * 100).toFixed(4) + "%";
+  }
+
+  // Call to Update Metrics
+  window.setInterval(function(){if (boolPaused === false && firstPlay === false) {updateMetrics()}}, 3000);
+
+  // Resolution
+  window.setInterval(function(){
+    document.getElementById('resolution').innerText = video.videoHeight + "x" + video.videoWidth;
+  }, 3000);
+
+  //Playlist Manager
+  function PlaylistClicked(source, id){
+    if (boolCanPlay) {
+      video.src = source;
+    }else if(boolIsSupported) {
+      hls.destroy();
+      hls = new Hls(configs);
+      hls.loadSource(source);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.muted = true;
+        video.play();
+      });   
+    }
+    var activeElements = document.getElementsByClassName('nav-link active');
+    for (var i = 0; i < activeElements.length; i++) {
+      var current = activeElements[i];
+      current.className = current.className.replace(" active", "");
+    }
+
+    // Reset Variables
+    var clickedElement = document.getElementById(id);
+    clickedElement.className += " active";
+    decodedFrames = 0;
+    droppedFrames = 0;
+    fps = 0;
+    
+    // Reset Timers
+    bufferDuration = 0;
+    bufferEndTime = 0;
+    bufferStartTime = 0;
+    bufferSeconds = 0;
+    totalBufferTime = 0;
+    pauseTime = 0;
+    totalPauseTime = 0;
+    totalPlayTime = 0;
+    t0 = performance.now();
+    t1 = 0;
+    t2 = 0;
+    timeDiff = 0; 
+
+    // Reset Counters
+    bufferCount  = 0; 
+    pauseCount = 0;
+    
+    // Reset Bools
+    firstPlay = true;
+    isBuffering = false;
+
+    // Reset innerHTML
+    document.getElementById("bufferCount").innerHTML = bufferCount;
+    document.getElementById("bufferDuration").innerHTML = bufferSeconds;
+    document.getElementById("totalBufferTime").innerHTML = totalBufferTime;
+    document.getElementById("VSTinitial").innerHTML = "";
+    document.getElementById("VSTcontinuous").innerHTML = "";
+    document.getElementById("demo").innerHTML = "";
+    document.getElementById("DecodedFps").innerHTML = "";
+    document.getElementById("DroppedFps").innerHTML = "";
+    document.getElementById("Fps").innerHTML = "";
+    document.getElementById("totalPauseTime").innerHTML = 0;
+    document.getElementById("time3").innerHTML = "";
+  }
+
+  // Get FPS , Decoded Frames, Dropped Frames
+  var fps = 0 ; 
+  var decodedFrames = 0;  
+  var droppedFrames = 0; 
+  var lastDecodedFrames = 0;
+  var currentFPS = 0; 
+  window.setInterval(function getCurrentFPS(){
+    if(!boolPaused && !isBuffering && !boolWaiting && !bufferedDuringLast5Seconds){
+      decodedFrames = video.webkitDecodedFrameCount || video.mozDecodedFrames || 0;
+      droppedFrames = video.webkitDroppedFrameCount || video.mozParsedFrames - video.mozDecodedFrames || 0;
+      if(lastDecodedFrames == 0 ){
+        lastDecodedFrames = decodedFrames;
+      }else{
+        currentFPS = decodedFrames;
+        document.getElementById("Fps").innerHTML = ((currentFPS - lastDecodedFrames)).toFixed(0);
+        document.getElementById("DecodedFps").innerHTML = decodedFrames;
+        document.getElementById("DroppedFps").innerHTML = droppedFrames;            
+        lastDecodedFrames = currentFPS;
+      }
+    } 
+    bufferedDuringLast5Seconds = false; 
+  },  1000);
+</script>
