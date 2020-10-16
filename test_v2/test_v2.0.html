@@ -234,12 +234,12 @@
         lastDecodedFrames = decodedFrames;
       }else{
         currentFPS = decodedFrames;
-        document.getElementById("Fps").innerHTML = ((currentFPS - lastDecodedFrames)).toFixed(0);
+        document.getElementById("Fps").innerHTML = ((currentFPS - lastDecodedFrames)/5).toFixed(0);
         document.getElementById("DecodedFps").innerHTML = decodedFrames;
         document.getElementById("DroppedFps").innerHTML = droppedFrames;            
         lastDecodedFrames = currentFPS;
       }
     } 
     bufferedDuringLast5Seconds = false; 
-  },  1000);
+  },  5000);
 </script>
