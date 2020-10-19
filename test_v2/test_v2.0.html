@@ -32,7 +32,6 @@
           <div>Estimated Frames Per Second: <span id="Fps">0</span></div>      
           <div>Total Decoded Frames: <span id="DecodedFps">0</span></div>
           <div>Dropped Frames: <span id="DroppedFps">0</span></div>
-          <div>Estimated Bandwidth: <span id="Bandwidth"></span></div>
         </div>
       </div>
     </div>
@@ -77,8 +76,8 @@
   var configs = {
     autoStartLoad:true,
     debug:false,
-    // maxBufferLength: 0.1,
-    // maxBufferSize: 10*100,  
+    maxBufferLength: 0.1,
+    maxBufferSize: 10*100,  
   };
 
   // Initialize video player
@@ -243,14 +242,4 @@
     } 
     bufferedDuringLast5Seconds = false; 
   },  5000);
-
-  window.setInterval(function getBandwidth(){
-      if(hls.bandwidthEstimate <  1024){
-          document.getElementById("Bandwidth").innerHTML = hls.bandwidthEstimate.toFixed(0) + "bps";
-      }else if(hls.bandwidthEstimate >=  1024 && hls.bandwidthEstimate < 1048576){
-         document.getElementById("Bandwidth").innerHTML = (hls.bandwidthEstimate/1024).toFixed(0) + "Kbps";
-      }else if(hls.bandwidthEstimate >= 1048576){
-         document.getElementById("Bandwidth").innerHTML = (hls.bandwidthEstimate/1048576).toFixed(0) + "Mbps";
-      }
-  },  10000);
 </script>
