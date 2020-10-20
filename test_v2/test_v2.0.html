@@ -35,7 +35,8 @@
           <div>Estimated Bandwidth: <span id="Bandwidth"></span></div>
           <div>Session Time: <span id="sessionTime"></span></div>
           <div>Play Count: <span id="playcounter"></span></div>
-
+          <div>Volume: <span id="Volume"></span></div>
+          <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
         </div>
       </div>
     </div>
@@ -43,6 +44,7 @@
 </html>
 <script>
   // Variable Decleration
+  
   // Timers
   var initialTime = 0;
   var pauseTime = 0;
@@ -61,6 +63,7 @@
   // Counters
   var bufferCount = 0;
   var pauseCount = 0;
+  var fullScreenCount = 0;
 
   // Bools
   var boolPaused = false; 
@@ -73,6 +76,8 @@
   var firstPlay = true;  
   var sessionTime = 0 ;
   var playcounter = 0 ; 
+  var fullScreenBool = false;
+
   // Hls init
   var hls;   
   var video = document.getElementById('video');
@@ -101,6 +106,7 @@
       });     
     }
   }
+  
   //play count
   video.addEventListener("play", function(){ 
     playcounter++; 
@@ -171,6 +177,28 @@
     document.getElementById('resolution').innerText = video.videoHeight + "x" + video.videoWidth;
   }, 3000);
 
+  // Volume function
+  video.addEventListener('volumechange', function() {
+    if (video.muted) {
+      document.getElementById("Volume").innerHTML = 0 + "%";
+    }
+    else {
+      document.getElementById("Volume").innerHTML = (video.volume*100).toFixed(0) + "%";
+    }
+  });
+
+  // Full-screen fuction
+  video.addEventListener("webkitfullscreenchange", function() {
+    if (!fullScreenBool) {
+      fullScreenCount++;
+      fullScreenBool = true;
+    }
+    else {
+      fullScreenBool = false;
+    }
+    document.getElementById("fullScreenCount").innerHTML = fullScreenCount;
+  });
+
   //Playlist Manager
   function PlaylistClicked(source, id){
     if (boolCanPlay) {
@@ -215,6 +243,7 @@
     // Reset Counters
     bufferCount  = 0; 
     pauseCount = 0;
+    fullScreenCount = 0;
     
     // Reset Bools
     firstPlay = true;
@@ -232,6 +261,7 @@
     document.getElementById("Fps").innerHTML = "";
     document.getElementById("totalPauseTime").innerHTML = 0;
     document.getElementById("time3").innerHTML = "";
+    document.getElementById("fullScreenCount").innerHTML = 0;
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
