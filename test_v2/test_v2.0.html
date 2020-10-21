@@ -37,6 +37,7 @@
           <div>Play Count: <span id="playcounter"></span></div>
           <div>Volume: <span id="Volume"></span></div>
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
+          <div>Error Count: <span id="errorCount">0</span></div>
         </div>
       </div>
     </div>
@@ -64,6 +65,7 @@
   var bufferCount = 0;
   var pauseCount = 0;
   var fullScreenCount = 0;
+  var errorCount = 0;
 
   // Bools
   var boolPaused = false; 
@@ -103,7 +105,11 @@
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.muted = true;
         video.play();
-      });     
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        errorCount++;
+        document.getElementById("errorCount").innerHTML = errorCount;
+      }); 
     }
   }
   
@@ -211,7 +217,11 @@
       hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.muted = true;
         video.play();
-      });   
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        errorCount++;
+        document.getElementById("errorCount").innerHTML = errorCount;
+      }); 
     }
     var activeElements = document.getElementsByClassName('nav-link active');
     for (var i = 0; i < activeElements.length; i++) {
@@ -244,6 +254,7 @@
     bufferCount  = 0; 
     pauseCount = 0;
     fullScreenCount = 0;
+    errorCount = 0;
     
     // Reset Bools
     firstPlay = true;
@@ -262,6 +273,7 @@
     document.getElementById("totalPauseTime").innerHTML = 0;
     document.getElementById("time3").innerHTML = "";
     document.getElementById("fullScreenCount").innerHTML = 0;
+    document.getElementById("errorCount").innerHTML = 0;
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
