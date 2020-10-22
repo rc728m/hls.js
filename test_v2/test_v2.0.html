@@ -22,10 +22,10 @@
           <div>Initial Startup Time: <span id="VSTinitial">0</span></div>
           <div>Video Start Time: <span id="VSTcontinuous">0</span></div>           
           <div>Video Resolution: <span id="resolution">0</span></div>
-          <div>Buffer Count: <span id="bufferCount">0</span></div>
+          <div>Buffer Count: <span id="rebufferCount">0</span></div>
           <div>Buffer Duration: <span id="bufferDuration">0</span></div>
-          <div>Total Buffer Time: <span id="totalBufferTime">0</span></div>      
-          <div>Buffer Ratio: <span id="demo">0</span></div>
+          <div>Total Rebuffer Time: <span id="totalRebufferTime">0</span></div>      
+          <div>Rebuffer Ratio: <span id="demo">0</span></div>
           <div>Play Time: <span id="time3">0</span></div>
           <div>Pause Count: <span id="pauseCount">0</span></div>
           <div>Total Pause Time: <span id="totalPauseTime">0</span></div>
@@ -35,6 +35,7 @@
           <div>Estimated Bandwidth: <span id="Bandwidth"></span></div>
           <div>Session Time: <span id="sessionTime"></span></div>
           <div>Play Count: <span id="playcounter"></span></div>
+          <div>Seek Count: <span id="seekCount"></span></div>
           <div>Volume: <span id="Volume"></span></div>
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
@@ -48,10 +49,11 @@
   
   // Timers
   var initialTime = 0;
+  var vst = 0;
   var pauseTime = 0;
   var totalPauseTime = 0;
   var totalPlayTime = 0;
-  var totalBufferTime = 0;
+  var totalRebufferTime = 0;
   var bufferStartTime = 0;
   var bufferEndTime = 0;
   var bufferSeconds = 0;
@@ -62,10 +64,11 @@
   var timeDiff = 0;   
 
   // Counters
-  var bufferCount = 0;
+  var rebufferCount = -1;
   var pauseCount = 0;
   var fullScreenCount = 0;
   var errorCount = 0;
+  var seekCount = 0;
 
   // Bools
   var boolPaused = false; 
@@ -129,7 +132,7 @@
   // Waiting event function
   video.addEventListener("waiting", function(){
     t0 = performance.now();
-    bufferCount++;
+    rebufferCount++;
     bufferedDuringLast5Seconds = true;
     boolWaiting = true;
     updateMetrics();
@@ -142,17 +145,20 @@
     timeDiff = (t1-t0) / 1000;
     if(firstPlay){
       initialTime = t0 / 1000;
-      document.getElementById("VSTinitial").innerHTML = timeDiff.toFixed(4); 
+      vst = timeDiff;
+      document.getElementById("VSTinitial").innerHTML = vst.toFixed(4); 
       document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); 
       firstPlay = false;
     }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4);}
         
     if (boolPaused == false){
-      totalBufferTime += timeDiff;
+      if (rebufferCount > 1){
+        totalRebufferTime += timeDiff;
+      }
       updateMetrics();
-      document.getElementById("bufferCount").innerHTML = bufferCount;
+      document.getElementById("rebufferCount").innerHTML = rebufferCount;
       document.getElementById("bufferDuration").innerHTML = timeDiff.toFixed(4) + " seconds";
-      document.getElementById("totalBufferTime").innerHTML = totalBufferTime.toFixed(4) + " seconds";
+      document.getElementById("totalRebufferTime").innerHTML = totalRebufferTime.toFixed(4) + " seconds";
     }
     else {
       totalPauseTime += timeDiff;
@@ -161,13 +167,19 @@
       document.getElementById("pauseCount").innerHTML = pauseCount;
     }            
   });
+  //Seeked event function
+  video.addEventListener("seeked", function(){
+    seekCount++;
+    boolPaused = false;
+    document.getElementById("seekCount").innerHTML = seekCount;
+  });
   
   // Update Metrics function
   function updateMetrics() {
     currentTime = performance.now() / 1000;
     totalPlayTime = currentTime - initialTime - totalPauseTime;
     document.getElementById("time3").innerHTML = totalPlayTime.toFixed(4) + " seconds";
-    document.getElementById("demo").innerHTML = ((totalBufferTime / totalPlayTime) * 100).toFixed(4) + "%";
+    document.getElementById("demo").innerHTML = ((totalRebufferTime / totalPlayTime) * 100).toFixed(4) + "%";
   }
 
   window.setInterval(function getSessionTime(){
@@ -232,16 +244,18 @@
     // Reset Variables
     var clickedElement = document.getElementById(id);
     clickedElement.className += " active";
+    vst = 0;
     decodedFrames = 0;
     droppedFrames = 0;
     fps = 0;
     
     // Reset Timers
+    vst = 0;
     bufferDuration = 0;
     bufferEndTime = 0;
     bufferStartTime = 0;
     bufferSeconds = 0;
-    totalBufferTime = 0;
+    totalRebufferTime = 0;
     pauseTime = 0;
     totalPauseTime = 0;
     totalPlayTime = 0;
@@ -251,19 +265,20 @@
     timeDiff = 0; 
 
     // Reset Counters
-    bufferCount  = 0; 
+    rebufferCount = -1; 
     pauseCount = 0;
     fullScreenCount = 0;
     errorCount = 0;
+    seekCount = 0;
     
     // Reset Bools
     firstPlay = true;
     isBuffering = false;
 
     // Reset innerHTML
-    document.getElementById("bufferCount").innerHTML = bufferCount;
+    document.getElementById("rebufferCount").innerHTML = rebufferCount;
     document.getElementById("bufferDuration").innerHTML = bufferSeconds;
-    document.getElementById("totalBufferTime").innerHTML = totalBufferTime;
+    document.getElementById("totalRebufferTime").innerHTML = totalRebufferTime;
     document.getElementById("VSTinitial").innerHTML = "";
     document.getElementById("VSTcontinuous").innerHTML = "";
     document.getElementById("demo").innerHTML = "";
@@ -274,6 +289,7 @@
     document.getElementById("time3").innerHTML = "";
     document.getElementById("fullScreenCount").innerHTML = 0;
     document.getElementById("errorCount").innerHTML = 0;
+    document.getElementById("seekCount").innerHTML = 0;
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
