@@ -1,4 +1,4 @@
-// Variable Decleration
+  // Variable Decleration
   
   // Timers
   var initialTime = 0;
@@ -17,11 +17,13 @@
   var timeDiff = 0;   
 
   // Counters
-  var rebufferCount = -1;
+  var rebufferCount = 0;
   var pauseCount = 0;
   var fullScreenCount = 0;
   var errorCount = 0;
   var seekCount = 0;
+  var sessionTime = 0;
+  var playcounter = 0; 
 
   // Bools
   var boolPaused = false; 
@@ -32,8 +34,6 @@
   var bufferedDuringLast5Seconds = false;
   var playd = false;
   var firstPlay = true;  
-  var sessionTime = 0 ;
-  var playcounter = 0 ; 
   var fullScreenBool = false;
 
   // Hls init
@@ -85,7 +85,9 @@
   // Waiting event function
   video.addEventListener("waiting", function(){
     t0 = performance.now();
-    rebufferCount++;
+    if (firstPlay === false){
+	  rebufferCount++;
+	}
     bufferedDuringLast5Seconds = true;
     boolWaiting = true;
     updateMetrics();
@@ -99,13 +101,14 @@
     if(firstPlay){
       initialTime = t0 / 1000;
       vst = timeDiff;
+	  duration = video.duration;
+	  document.getElementById("Duration").innerHTML = duration;
       document.getElementById("VSTinitial").innerHTML = vst.toFixed(4); 
       document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); 
-      firstPlay = false;
     }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4);}
         
     if (boolPaused == false){
-      if (rebufferCount > 1){
+      if (firstPlay === false){
         totalRebufferTime += timeDiff;
       }
       updateMetrics();
@@ -118,7 +121,8 @@
       document.getElementById("totalPauseTime").innerHTML = totalPauseTime.toFixed(4) + " seconds";
       boolPaused = false;
       document.getElementById("pauseCount").innerHTML = pauseCount;
-    }            
+    }
+    firstPlay = false;	
   });
   //Seeked event function
   video.addEventListener("seeked", function(){
@@ -130,9 +134,14 @@
   // Update Metrics function
   function updateMetrics() {
     currentTime = performance.now() / 1000;
-    totalPlayTime = currentTime - initialTime - totalPauseTime;
+	totalPlayTime = currentTime - initialTime - totalPauseTime;
+	bufferStartTime = video.buffered.start(0);
+	bufferEndTime = video.buffered.end(0);
     document.getElementById("time3").innerHTML = totalPlayTime.toFixed(4) + " seconds";
     document.getElementById("demo").innerHTML = ((totalRebufferTime / totalPlayTime) * 100).toFixed(4) + "%";
+	document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
+	document.getElementById("currentTime").innerHTML = video.currentTime + "s";
+	document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
   }
 
   window.setInterval(function getSessionTime(){
@@ -218,7 +227,7 @@
     timeDiff = 0; 
 
     // Reset Counters
-    rebufferCount = -1; 
+    rebufferCount = 0; 
     pauseCount = 0;
     fullScreenCount = 0;
     errorCount = 0;
@@ -243,6 +252,7 @@
     document.getElementById("fullScreenCount").innerHTML = 0;
     document.getElementById("errorCount").innerHTML = 0;
     document.getElementById("seekCount").innerHTML = 0;
+	document.getElementById("playcounter").innerHTML = 0;
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
