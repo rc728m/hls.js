@@ -19,14 +19,14 @@
       <div class="row">
         <div class="mx-auto col-9"><video width="100%"  id="video" controls autoplay></video></div>
         <div class="col-3">
-		  <div>Current Time: <span id="currentTime">0</span></div>
-		  <div>Duration: <span id="Duration">0</span></div>
-		  <div>Watched Percentage: <span id="watchedPercent">0</span></div>
+      <div>Current Time: <span id="currentTime">0</span></div>
+      <div>Duration: <span id="Duration">0</span></div>
+      <div>Watched Percentage: <span id="watchedPercent">0</span></div>
           <div>Initial Startup Time: <span id="VSTinitial">0</span></div>
           <div>Video Start Time: <span id="VSTcontinuous">0</span></div>           
           <div>Video Resolution: <span id="resolution">0</span></div>
           <div>Buffer Count: <span id="rebufferCount">0</span></div>
-		  <div>Buffer Size: <span id="bufferSize"></span></div>
+          <div>Buffer Size: <span id="bufferSize"></span></div>
           <div>Buffer Duration: <span id="bufferDuration">0</span></div>
           <div>Total Rebuffer Time: <span id="totalRebufferTime">0</span></div>      
           <div>Rebuffer Ratio: <span id="demo">0</span></div>
@@ -36,13 +36,14 @@
           <div>Estimated Frames Per Second: <span id="Fps">0</span></div>      
           <div>Total Decoded Frames: <span id="DecodedFps">0</span></div>
           <div>Dropped Frames: <span id="DroppedFps">0</span></div>
-          <div>Estimated Bandwidth: <span id="Bandwidth"></span></div>
-          <div>Session Time: <span id="sessionTime"></span></div>
-          <div>Play Count: <span id="playcounter"></span></div>
-          <div>Seek Count: <span id="seekCount"></span></div>
-          <div>Volume: <span id="Volume"></span></div>
+          <div>Estimated Bandwidth: <span id="Bandwidth">0</span></div>
+          <div>Session Time: <span id="sessionTime">0</span></div>
+          <div>Play Count: <span id="playcounter">0</span></div>
+          <div>Seek Count: <span id="seekCount">0</span></div>
+          <div>Volume: <span id="Volume">0</span></div>
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
+          <div>Level Changed Counter:  <span id="changeLevelCounter">0</span></div>
         </div>
       </div>
     </div>
@@ -75,6 +76,7 @@
   var seekCount = 0;
   var sessionTime = 0;
   var playcounter = 0; 
+  var changeLevelCounter = 0 ;
 
   // Bools
   var boolPaused = false; 
@@ -117,6 +119,11 @@
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       }); 
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        changeLevelCounter++;
+        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+      }); 
+
     }
   }
   
@@ -137,8 +144,8 @@
   video.addEventListener("waiting", function(){
     t0 = performance.now();
     if (firstPlay === false){
-	  rebufferCount++;
-	}
+    rebufferCount++;
+  }
     bufferedDuringLast5Seconds = true;
     boolWaiting = true;
     updateMetrics();
@@ -152,8 +159,8 @@
     if(firstPlay){
       initialTime = t0 / 1000;
       vst = timeDiff;
-	  duration = video.duration;
-	  document.getElementById("Duration").innerHTML = duration;
+    duration = video.duration;
+    document.getElementById("Duration").innerHTML = duration;
       document.getElementById("VSTinitial").innerHTML = vst.toFixed(4); 
       document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4); 
     }else{ document.getElementById("VSTcontinuous").innerHTML = timeDiff.toFixed(4);}
@@ -173,7 +180,7 @@
       boolPaused = false;
       document.getElementById("pauseCount").innerHTML = pauseCount;
     }
-    firstPlay = false;	
+    firstPlay = false;  
   });
   //Seeked event function
   video.addEventListener("seeked", function(){
@@ -185,14 +192,14 @@
   // Update Metrics function
   function updateMetrics() {
     currentTime = performance.now() / 1000;
-	totalPlayTime = currentTime - initialTime - totalPauseTime;
-	bufferStartTime = video.buffered.start(0);
-	bufferEndTime = video.buffered.end(0);
+  totalPlayTime = currentTime - initialTime - totalPauseTime;
+  bufferStartTime = video.buffered.start(0);
+  bufferEndTime = video.buffered.end(0);
     document.getElementById("time3").innerHTML = totalPlayTime.toFixed(4) + " seconds";
     document.getElementById("demo").innerHTML = ((totalRebufferTime / totalPlayTime) * 100).toFixed(4) + "%";
-	document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
-	document.getElementById("currentTime").innerHTML = video.currentTime + "s";
-	document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
+  document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
+  document.getElementById("currentTime").innerHTML = video.currentTime + "s";
+  document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
   }
 
   window.setInterval(function getSessionTime(){
@@ -283,6 +290,8 @@
     fullScreenCount = 0;
     errorCount = 0;
     seekCount = 0;
+    changeLevelCounter = 0 ;
+    playcounter = 0;
     
     // Reset Bools
     firstPlay = true;
@@ -303,7 +312,8 @@
     document.getElementById("fullScreenCount").innerHTML = 0;
     document.getElementById("errorCount").innerHTML = 0;
     document.getElementById("seekCount").innerHTML = 0;
-	document.getElementById("playcounter").innerHTML = 0;
+    document.getElementById("playcounter").innerHTML = 0;
+    document.getElementById("changeLevelCounter").innerHTML = 0;
   }
 
   // Get FPS , Decoded Frames, Dropped Frames
