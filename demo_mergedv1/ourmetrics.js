@@ -65,6 +65,11 @@
       hls.on(Hls.Events.ERROR, function (event, data) {
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
+      });
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        changeLevelCounter++;
+        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
       }); 
     }
   }
@@ -196,6 +201,11 @@
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       }); 
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        changeLevelCounter++;
+        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
+      }); 
     }
     var activeElements = document.getElementsByClassName('nav-link active');
     for (var i = 0; i < activeElements.length; i++) {
@@ -252,7 +262,8 @@
     document.getElementById("fullScreenCount").innerHTML = 0;
     document.getElementById("errorCount").innerHTML = 0;
     document.getElementById("seekCount").innerHTML = 0;
-	document.getElementById("playcounter").innerHTML = 0;
+  document.getElementById("playcounter").innerHTML = 0;
+  document.getElementById("bitrateChange").innerHTML = "";
   }
 
   // Get FPS , Decoded Frames, Dropped Frames

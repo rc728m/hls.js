@@ -44,6 +44,7 @@
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
           <div>Level Changed Counter:  <span id="changeLevelCounter">0</span></div>
+          <div>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</div>
         </div>
       </div>
     </div>
@@ -122,6 +123,7 @@
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
       }); 
 
     }
@@ -253,7 +255,13 @@
       hls.on(Hls.Events.ERROR, function (event, data) {
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
+      });
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        changeLevelCounter++;
+        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
       }); 
+      
     }
     var activeElements = document.getElementsByClassName('nav-link active');
     for (var i = 0; i < activeElements.length; i++) {
@@ -314,6 +322,7 @@
     document.getElementById("seekCount").innerHTML = 0;
     document.getElementById("playcounter").innerHTML = 0;
     document.getElementById("changeLevelCounter").innerHTML = 0;
+    document.getElementById("bitrateChange").innerHTML = "";
   }
 
   // Get FPS , Decoded Frames, Dropped Frames

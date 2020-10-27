@@ -1,4 +1,4 @@
-TYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -145,6 +145,8 @@ TYPE html>
           <div>Volume: <span id="Volume"></span></div>
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
+          <div>Level Changed Counter: <span id="changeLevelCounter">0</span></div>
+          <div>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</div>
         </div>
       </div>  
       
@@ -306,7 +308,7 @@ TYPE html>
         <label>Buffer state:</label>
         <pre id="bufferedOut"></pre>
         <label>General stats:</label>
-        <pre id='statisticsOut'></pre>
+        <pre id="statisticsOut"></pre>
       </div>
 
       
