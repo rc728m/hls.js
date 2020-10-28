@@ -69,7 +69,7 @@
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
+        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
       }); 
     }
   }
