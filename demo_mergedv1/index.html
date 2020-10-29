@@ -119,16 +119,21 @@
 
       </div>
       <div class="row">
-        <div class="mx-auto col-9"><video width="100%"  id="video" controls autoplay></video></div>
-        <div class="col-3">
+        <div class="mx-auto col-8">
+          <video width="100%"  id="video" controls autoplay></video>
+          <div style="width: 500px; height: 250px;">
+              <canvas id="bitrateGraphCSULA" ></canvas>
+          </div>
+        </div>
+        <div class="col-4">
           <div>Current Time: <span id="currentTime">0</span></div>
-		  <div>Duration: <span id="Duration">0</span></div>
-		  <div>Watched Percentage: <span id="watchedPercent">0</span></div>
+		      <div>Duration: <span id="Duration">0</span></div>
+		      <div>Watched Percentage: <span id="watchedPercent">0</span></div>
           <div>Initial Startup Time: <span id="VSTinitial">0</span></div>
           <div>Video Start Time: <span id="VSTcontinuous">0</span></div>           
           <div>Video Resolution: <span id="resolution">0</span></div>
           <div>Buffer Count: <span id="rebufferCount">0</span></div>
-		  <div>Buffer Size: <span id="bufferSize"></span></div>
+		      <div>Buffer Size: <span id="bufferSize"></span></div>
           <div>Buffer Duration: <span id="bufferDuration">0</span></div>
           <div>Total Rebuffer Time: <span id="totalRebufferTime">0</span></div>      
           <div>Rebuffer Ratio: <span id="demo">0</span></div>
@@ -147,10 +152,13 @@
           <div>Error Count: <span id="errorCount">0</span></div>
           <div>Level Changed Counter: <span id="changeLevelCounter">0</span></div>
           <div>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</div>
+          <div>Bitrate Mean: <span id="bitrateMean">0</span></div>
         </div>
       </div>  
       
       <br>
+      
+
       <canvas id="bufferedCanvas" width="720" height="15" class="videoCentered" onclick="onClickBufferedRange(event);" style="height: fit-content;"></canvas>
       <br>
       <br>
@@ -328,5 +336,9 @@
     <script src = "ourmetrics.js"></script>
     <script src="hls.js"></script>
     <script src="hls-demo.js"></script>
+    <!-- CSULA required libs -->
+    <script type="text/javascript" src="Chart.js"></script>
+    <script type="text/javascript" src="MyBitrateChart.js"></script>
+
   </body>
 </html>

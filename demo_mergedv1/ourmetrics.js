@@ -1,5 +1,6 @@
   // Variable Decleration
-  
+  var bitrateMean = 0 ; 
+  var summation = 0 ;
   // Timers
   var initialTime = 0;
   var vst = 0;
@@ -36,7 +37,9 @@
   var playd = false;
   var firstPlay = true;  
   var fullScreenBool = false;
+  var charts_initialized = false;
 
+  var currentBitRateLevel = -1;
   // Hls init
   var hls;   
   var video = document.getElementById('video');
@@ -68,10 +71,16 @@
         document.getElementById("errorCount").innerHTML = errorCount;
       });
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        currentBitRateLevel = hls.levels[hls.currentLevel].bitrate / 1024;
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
         document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
-      }); 
+        if(changeLevelCounter > 0){
+          summation += hls.levels[hls.currentLevel].bitrate / 1024;
+          bitrateMean = summation / changeLevelCounter;
+          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
+        }   
+      });  
     }
   }
   
@@ -79,6 +88,13 @@
   video.addEventListener("play", function(){ 
     playcounter++; 
     document.getElementById("playcounter").innerHTML = playcounter;
+      if(!charts_initialized){
+        // Initialize Charts.
+        inititializeMyBitrateChart(document.getElementById('bitrateGraphCSULA'),document.getElementById("video"));
+        charts_initialized = true;
+      }else if(pauseBitrateInterval){
+        resumeBitrateInterval();
+      }
   });
   // Paused event function
   video.addEventListener("pause", function(){
@@ -86,6 +102,7 @@
     pauseCount++;
     updateMetrics();
     boolPaused = true; 
+    clearBitrateInterval();        
   });
 
   // Waiting event function
@@ -227,6 +244,9 @@
     decodedFrames = 0;
     droppedFrames = 0;
     fps = 0;
+
+     bitrateMean = 0 ; 
+
     
     // Reset Timers
     vst = 0;
@@ -256,6 +276,8 @@
     firstPlay = true;
     isBuffering = false;
 
+    bitrateMean = 0 ; 
+    summation = 0 ;
     // Reset innerHTML
     document.getElementById("rebufferCount").innerHTML = 0;
     document.getElementById("bufferDuration").innerHTML = 0;
@@ -271,10 +293,10 @@
     document.getElementById("fullScreenCount").innerHTML = 0;
     document.getElementById("errorCount").innerHTML = 0;
     document.getElementById("seekCount").innerHTML = 0;
-  document.getElementById("playcounter").innerHTML = 0;
+    document.getElementById("playcounter").innerHTML = 0;
     document.getElementById("changeLevelCounter").innerHTML = 0;
-
-  document.getElementById("bitrateChange").innerHTML = "";
+    document.getElementById("bitrateChange").innerHTML = "";
+    removeDataFromMyChart();
   }
     function ourHLSlisteners(){
     hls.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -285,9 +307,17 @@
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       }); 
-      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+     
+       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        currentBitRateLevel = hls.levels[hls.currentLevel].bitrate / 1024;
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
-      }); 
+        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
+        if(changeLevelCounter > 0){
+          summation += hls.levels[hls.currentLevel].bitrate / 1024;
+          bitrateMean = summation / changeLevelCounter;
+          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
+        }   
+      });  
   }
+
