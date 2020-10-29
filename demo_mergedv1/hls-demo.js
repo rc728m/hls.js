@@ -1461,6 +1461,11 @@ function loadSelectedStream() {
   self.hls = hls = new Hls(hlsConfig);
   logStatus('Loading manifest and attaching video element...');
   addChartEventListeners(hls);
+  // CSULA CODE -------------------------
+  ourHLSlisteners(hls);
+  ResetOurMetricsAndVariables();
+    // end CSULA CODE -------------------------
+
   hls.loadSource(url);
   hls.autoLevelCapping = levelCapping;
   hls.attachMedia(video);

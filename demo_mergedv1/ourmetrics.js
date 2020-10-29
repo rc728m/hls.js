@@ -24,6 +24,7 @@
   var seekCount = 0;
   var sessionTime = 0;
   var playcounter = 0; 
+  var changeLevelCounter = 0;
 
   // Bools
   var boolPaused = false; 
@@ -184,88 +185,7 @@
     document.getElementById("fullScreenCount").innerHTML = fullScreenCount;
   });
 
-  //Playlist Manager
-  function PlaylistClicked(source, id){
-    if (boolCanPlay) {
-      video.src = source;
-    }else if(boolIsSupported) {
-      hls.destroy();
-      hls = new Hls(configs);
-      hls.loadSource(source);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, function() {
-        video.muted = true;
-        video.play();
-      });
-      hls.on(Hls.Events.ERROR, function (event, data) {
-        errorCount++;
-        document.getElementById("errorCount").innerHTML = errorCount;
-      }); 
-      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
-        changeLevelCounter++;
-        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
-      }); 
-    }
-    var activeElements = document.getElementsByClassName('nav-link active');
-    for (var i = 0; i < activeElements.length; i++) {
-      var current = activeElements[i];
-      current.className = current.className.replace(" active", "");
-    }
-
-    // Reset Variables
-    var clickedElement = document.getElementById(id);
-    clickedElement.className += " active";
-    vst = 0;
-    decodedFrames = 0;
-    droppedFrames = 0;
-    fps = 0;
-    
-    // Reset Timers
-    vst = 0;
-    bufferDuration = 0;
-    bufferEndTime = 0;
-    bufferStartTime = 0;
-    bufferSeconds = 0;
-    totalRebufferTime = 0;
-    pauseTime = 0;
-    totalPauseTime = 0;
-    totalPlayTime = 0;
-    t0 = performance.now();
-    t1 = 0;
-    t2 = 0;
-    timeDiff = 0; 
-
-    // Reset Counters
-    rebufferCount = 0; 
-    pauseCount = 0;
-    fullScreenCount = 0;
-    errorCount = 0;
-    seekCount = 0;
-    
-    // Reset Bools
-    firstPlay = true;
-    isBuffering = false;
-
-    // Reset innerHTML
-    document.getElementById("rebufferCount").innerHTML = rebufferCount;
-    document.getElementById("bufferDuration").innerHTML = bufferSeconds;
-    document.getElementById("totalRebufferTime").innerHTML = totalRebufferTime;
-    document.getElementById("VSTinitial").innerHTML = "";
-    document.getElementById("VSTcontinuous").innerHTML = "";
-    document.getElementById("demo").innerHTML = "";
-    document.getElementById("DecodedFps").innerHTML = "";
-    document.getElementById("DroppedFps").innerHTML = "";
-    document.getElementById("Fps").innerHTML = "";
-    document.getElementById("totalPauseTime").innerHTML = 0;
-    document.getElementById("time3").innerHTML = "";
-    document.getElementById("fullScreenCount").innerHTML = 0;
-    document.getElementById("errorCount").innerHTML = 0;
-    document.getElementById("seekCount").innerHTML = 0;
-  document.getElementById("playcounter").innerHTML = 0;
-  document.getElementById("bitrateChange").innerHTML = "";
-  }
-
+     
   // Get FPS , Decoded Frames, Dropped Frames
   var fps = 0; 
   var decodedFrames = 0;  
@@ -298,3 +218,76 @@
          document.getElementById("Bandwidth").innerHTML = (hls.bandwidthEstimate/1048576).toFixed(0) + "Mbps";
       }
   },  10000);
+
+
+  function ResetOurMetricsAndVariables(){
+
+    // Reset Variables
+    vst = 0;
+    decodedFrames = 0;
+    droppedFrames = 0;
+    fps = 0;
+    
+    // Reset Timers
+    vst = 0;
+    bufferDuration = 0;
+    bufferEndTime = 0;
+    bufferStartTime = 0;
+    bufferSeconds = 0;
+    totalRebufferTime = 0;
+    pauseTime = 0;
+    totalPauseTime = 0;
+    totalPlayTime = 0;
+    t0 = performance.now();
+    t1 = 0;
+    t2 = 0;
+    timeDiff = 0; 
+
+    // Reset Counters
+    rebufferCount = 0; 
+    pauseCount = 0;
+    fullScreenCount = 0;
+    errorCount = 0;
+    seekCount = 0;
+    changeLevelCounter = 0 
+    playcounter = 0; 
+    
+    // Reset Bools
+    firstPlay = true;
+    isBuffering = false;
+
+    // Reset innerHTML
+    document.getElementById("rebufferCount").innerHTML = 0;
+    document.getElementById("bufferDuration").innerHTML = 0;
+    document.getElementById("totalRebufferTime").innerHTML = 0;
+    document.getElementById("VSTinitial").innerHTML = "";
+    document.getElementById("VSTcontinuous").innerHTML = "";
+    document.getElementById("demo").innerHTML = "";
+    document.getElementById("DecodedFps").innerHTML = "";
+    document.getElementById("DroppedFps").innerHTML = "";
+    document.getElementById("Fps").innerHTML = "";
+    document.getElementById("totalPauseTime").innerHTML = 0;
+    document.getElementById("time3").innerHTML = "";
+    document.getElementById("fullScreenCount").innerHTML = 0;
+    document.getElementById("errorCount").innerHTML = 0;
+    document.getElementById("seekCount").innerHTML = 0;
+  document.getElementById("playcounter").innerHTML = 0;
+    document.getElementById("changeLevelCounter").innerHTML = 0;
+
+  document.getElementById("bitrateChange").innerHTML = "";
+  }
+    function ourHLSlisteners(){
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        video.muted = true;
+        video.play();
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        errorCount++;
+        document.getElementById("errorCount").innerHTML = errorCount;
+      }); 
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+        changeLevelCounter++;
+        document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("bitrateChange").innerHTML += ", " + hls.levels[hls.currentLevel].bitrate + "Kbps(" + hls.currentLevel + ")";
+      }); 
+  }
