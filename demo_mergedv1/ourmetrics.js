@@ -75,16 +75,20 @@
         video.muted = true;
         video.play();
       });
+
+      // Error count listner
       hls.on(Hls.Events.ERROR, function (event, data) {
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       });
+
+      // Level count listener
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
       });
 
-      
+      // Frag changed listner (for bitrate)
       hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
         fragChangeCount++;
         timeFragDur = video.currentTime - fragTimer;
@@ -281,6 +285,11 @@
     t1 = 0;
     t2 = 0;
     timeDiff = 0; 
+    timeFragDur = 0;
+    bitrateMean = 0;
+    fragTimer = 0;
+    currBR = 0;
+    prevBR = 0;
 
     // Reset Counters
     rebufferCount = 0; 
@@ -290,6 +299,8 @@
     seekCount = 0;
     changeLevelCounter = 0 
     playcounter = 0; 
+    summation = 0;
+    fragChangeCount = 0 ;
     
     // Reset Bools
     firstPlay = true;
@@ -314,29 +325,41 @@
     document.getElementById("seekCount").innerHTML = 0;
     document.getElementById("playcounter").innerHTML = 0;
     document.getElementById("changeLevelCounter").innerHTML = 0;
-    document.getElementById("bitrateChange").innerHTML = "";
+    document.getElementById("currentBitrate").innerHTML = 0;
     removeDataFromMyChart();
   }
     function ourHLSlisteners(){
+      
     hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.muted = true;
         video.play();
       });
+
       hls.on(Hls.Events.ERROR, function (event, data) {
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       }); 
      
-       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
-        currentBitRateLevel = hls.levels[hls.currentLevel].bitrate / 1024;
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
-        if(changeLevelCounter > 0){
-          summation += hls.levels[hls.currentLevel].bitrate / 1024;
-          bitrateMean = summation / changeLevelCounter;
-          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
-        }   
-      });  
+      });
+
+      hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
+        fragChangeCount++;
+        timeFragDur = video.currentTime - fragTimer;
+        currBR = hls.levels[hls.currentLevel].realBitrate;
+        timeFragDur = video.currentTime - fragTimer;
+        summation += prevBR * timeFragDur;
+        bitrateMean = summation / video.currentTime;
+        document.getElementById("currentBitrate").innerHTML = (currBR / 1024).toFixed(2) + " kbps";
+        if (fragChangeCount > 1){
+          document.getElementById("bitrateChange").innerHTML += ", " + (prevBR / 1024).toFixed(2) + " kbps";
+          document.getElementById("bitrateMean").innerHTML = (bitrateMean / 1024).toFixed(2) + " kbps";
+        } 
+        fragTimer += timeFragDur;
+        prevBR = currBR;
+      }); 
+
   }
 
