@@ -62,7 +62,7 @@ function initializeInterval(){
         if(pauseBitrateInterval){
           clearInterval(bitrateInterval);
         }else{
-          addDataToMyBitrateChart(myChart, timeChart, [currentBitRateLevel]);
+          addDataToMyBitrateChart(myChart, timeChart, [currBR]);
           timeChart += interval / 1000;
         }
     }, interval);
@@ -80,7 +80,7 @@ function resumeBitrateInterval(){
               if(pauseBitrateInterval){
                 clearInterval(bitrateInterval);
               }else{
-                addDataToMyBitrateChart(myChart, timeChart, [currentBitRateLevel]);
+                addDataToMyBitrateChart(myChart, timeChart, [currBR]);
                 timeChart += interval / 1000;
               }
           }, interval);  

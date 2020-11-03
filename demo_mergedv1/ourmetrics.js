@@ -16,6 +16,11 @@
   var t2 = 0; 
   var t3 = 0; 
   var timeDiff = 0;   
+  var timeFragDur = 0;
+  var bitrateMean = 0;
+  var fragTimer = 0;
+  var currBR = 0;
+  var prevBR = 0;
 
   // Counters
   var rebufferCount = 0;
@@ -26,6 +31,8 @@
   var sessionTime = 0;
   var playcounter = 0; 
   var changeLevelCounter = 0;
+  var summation = 0;
+  var fragChangeCount =0 ;
 
   // Bools
   var boolPaused = false; 
@@ -48,8 +55,10 @@
   var configs = {
     autoStartLoad:true,
     debug:false,
+    abrMaxWithRealBitrate: true,
     // maxBufferLength: 0.1,
     // maxBufferSize: 10*100,  
+    
   };
 
   // Initialize video player
@@ -71,16 +80,26 @@
         document.getElementById("errorCount").innerHTML = errorCount;
       });
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
-        currentBitRateLevel = hls.levels[hls.currentLevel].bitrate / 1024;
         changeLevelCounter++;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
-        if(changeLevelCounter > 0){
-          summation += hls.levels[hls.currentLevel].bitrate / 1024;
-          bitrateMean = summation / changeLevelCounter;
-          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
-        }   
-      });  
+      });
+
+      
+      hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
+        fragChangeCount++;
+        timeFragDur = video.currentTime - fragTimer;
+        currBR = hls.levels[hls.currentLevel].realBitrate;
+        timeFragDur = video.currentTime - fragTimer;
+        summation += prevBR * timeFragDur;
+        bitrateMean = summation / video.currentTime;
+        document.getElementById("currentBitrate").innerHTML = (currBR / 1024).toFixed(2) + " kbps";
+        if (fragChangeCount > 1){
+          document.getElementById("bitrateChange").innerHTML += ", " + (prevBR / 1024).toFixed(2) + " kbps";
+          document.getElementById("bitrateMean").innerHTML = (bitrateMean / 1024).toFixed(2) + " kbps";
+        } 
+        fragTimer += timeFragDur;
+        prevBR = currBR;
+      }); 
     }
   }
   
