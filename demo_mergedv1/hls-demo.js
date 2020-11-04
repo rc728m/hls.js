@@ -1257,7 +1257,9 @@ if (demoConfig) {
 var hlsjsDefaults = {
   debug: true,
   enableWorker: true,
-  liveBackBufferLength: 60 * 15
+  autoStartLoad:true,
+  liveBackBufferLength: 60 * 15,
+  abrMaxWithRealBitrate: true
 };
 var enableStreaming = getDemoConfigPropOrDefault('enableStreaming', true);
 var autoRecoverError = getDemoConfigPropOrDefault('autoRecoverError', true);

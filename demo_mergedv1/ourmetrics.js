@@ -17,7 +17,6 @@
   var t3 = 0; 
   var timeDiff = 0;   
   var timeFragDur = 0;
-  var bitrateMean = 0;
   var fragTimer = 0;
   var currBR = 0;
   var prevBR = 0;
@@ -48,16 +47,17 @@
   var fullScreenBool = false;
   var charts_initialized = false;
 
-  var currentBitRateLevel = -1;
   // Hls init
   var hls;   
   var video = document.getElementById('video');
   var videoSrc ='https://att-advavtech-output.s3.amazonaws.com/csula/At_S_SPR_1080p24.m3u8';
   // Video configs
   var configs = {
+    debug: true,
+    enableWorker: true,
     autoStartLoad:true,
-    debug:false,
-    abrMaxWithRealBitrate: true,
+    liveBackBufferLength: 60 * 15,
+    abrMaxWithRealBitrate: true
     // maxBufferLength: 0.1,
     // maxBufferSize: 10*100,  
     
@@ -189,14 +189,14 @@
   // Update Metrics function
   function updateMetrics() {
     currentTime = performance.now() / 1000;
-	totalPlayTime = currentTime - initialTime - totalPauseTime;
-	bufferStartTime = video.buffered.start(0);
-	bufferEndTime = video.buffered.end(0);
+	  totalPlayTime = currentTime - initialTime - totalPauseTime;
+	  bufferStartTime = video.buffered.start(0);
+	  bufferEndTime = video.buffered.end(0);
     document.getElementById("time3").innerHTML = totalPlayTime.toFixed(4) + " seconds";
     document.getElementById("demo").innerHTML = ((totalRebufferTime / totalPlayTime) * 100).toFixed(4) + "%";
-	document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
-	document.getElementById("currentTime").innerHTML = video.currentTime + "s";
-	document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
+	  document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
+	  document.getElementById("currentTime").innerHTML = video.currentTime + "s";
+	  document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
   }
 
   window.setInterval(function getSessionTime(){
@@ -351,10 +351,16 @@
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       }); 
-     
+
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
+        currLevel = data.level;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("currentlevel").innerHTML = currLevel;
+        if (changeLevelCounter > 1) {
+          document.getElementById("levelchangehistory").innerHTML += ", " + prevLevel;
+        }
+        prevLevel = currLevel;
       });
 
       hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
