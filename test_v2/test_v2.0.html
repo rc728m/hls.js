@@ -44,6 +44,9 @@
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
           <div>Level Changed Counter:  <span id="changeLevelCounter">0</span></div>
+          <div>Current Level: <span id="currentlevel">0</span></div>
+          <div>Level Change History: [Loading<span id="levelchangehistory"></span>]</div>
+          <div>Current Bitrate: <span id="currentBitrate"></span></div>
           <div>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</div>
           <div>Bitrate Mean: <span id="bitrateMean">0</span></div>
         </div>
@@ -69,7 +72,12 @@
   var t1 = 0; 
   var t2 = 0; 
   var t3 = 0; 
-  var timeDiff = 0;   
+  var timeDiff = 0;  
+  var timeFragDur = 0;
+  var bitrateMean = 0;
+  var fragTimer = 0;
+  var currBR = 0;
+  var prevBR = 0; 
 
   // Counters
   var rebufferCount = 0;
@@ -79,7 +87,11 @@
   var seekCount = 0;
   var sessionTime = 0;
   var playcounter = 0; 
-  var changeLevelCounter = 0 ;
+  var changeLevelCounter = 0;
+  var summation = 0;
+  var fragChangeCount =0 ;
+  var currLevel = 0;
+  var prevLevel = 0;
 
   // Bools
   var boolPaused = false; 
@@ -100,6 +112,7 @@
   var configs = {
     autoStartLoad:true,
     debug:false,
+    abrMaxWithRealBitrate: true,
     // maxBufferLength: 0.1,
     // maxBufferSize: 10*100,  
   };
@@ -125,14 +138,31 @@
      
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
+        currLevel = data.level;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
-        if(changeLevelCounter > 0){
-          summation += hls.levels[hls.currentLevel].bitrate / 1024;
-          bitrateMean = summation / changeLevelCounter;
-          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
-        }   
-      });     
+        document.getElementById("currentlevel").innerHTML = currLevel;
+        if (changeLevelCounter > 1) {
+          document.getElementById("levelchangehistory").innerHTML += ", " + prevLevel;
+        }
+        prevLevel = currLevel;
+      });
+
+      // Frag changed listner (for bitrate)
+      hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
+        fragChangeCount++;
+        timeFragDur = video.currentTime - fragTimer;
+        currBR = hls.levels[hls.currentLevel].realBitrate;
+        timeFragDur = video.currentTime - fragTimer;
+        summation += prevBR * timeFragDur;
+        bitrateMean = summation / video.currentTime;
+        document.getElementById("currentBitrate").innerHTML = (currBR / 1024).toFixed(2) + " kbps";
+        if (fragChangeCount > 1){
+          document.getElementById("bitrateChange").innerHTML += ", " + (prevBR / 1024).toFixed(2) + " kbps";
+          document.getElementById("bitrateMean").innerHTML = (bitrateMean / 1024).toFixed(2) + " kbps";
+        } 
+        fragTimer += timeFragDur;
+        prevBR = currBR;
+      });    
     }
   }
   
@@ -263,15 +293,32 @@
         errorCount++;
         document.getElementById("errorCount").innerHTML = errorCount;
       });
-       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+      hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
+        currLevel = data.level;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
-        document.getElementById("bitrateChange").innerHTML += ", " + (hls.levels[hls.currentLevel].bitrate / 1024).toFixed(2) + "Kbps(" + hls.currentLevel + ")";
-        if(changeLevelCounter > 0){
-          summation += hls.levels[hls.currentLevel].bitrate / 1024;
-          bitrateMean = summation / changeLevelCounter;
-          document.getElementById("bitrateMean").innerHTML = bitrateMean.toFixed(2);
-        }   
+        document.getElementById("currentlevel").innerHTML = currLevel;
+        if (changeLevelCounter > 1) {
+          document.getElementById("levelchangehistory").innerHTML += ", " + prevLevel;
+        }
+        prevLevel = currLevel;
+      });
+
+      // Frag changed listner (for bitrate)
+      hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
+        fragChangeCount++;
+        timeFragDur = video.currentTime - fragTimer;
+        currBR = hls.levels[hls.currentLevel].realBitrate;
+        timeFragDur = video.currentTime - fragTimer;
+        summation += prevBR * timeFragDur;
+        bitrateMean = summation / video.currentTime;
+        document.getElementById("currentBitrate").innerHTML = (currBR / 1024).toFixed(2) + " kbps";
+        if (fragChangeCount > 1){
+          document.getElementById("bitrateChange").innerHTML += ", " + (prevBR / 1024).toFixed(2) + " kbps";
+          document.getElementById("bitrateMean").innerHTML = (bitrateMean / 1024).toFixed(2) + " kbps";
+        } 
+        fragTimer += timeFragDur;
+        prevBR = currBR;
       }); 
       
     }
@@ -303,6 +350,11 @@
     t1 = 0;
     t2 = 0;
     timeDiff = 0; 
+    timeFragDur = 0;
+    bitrateMean = 0;
+    fragTimer = 0;
+    currBR = 0;
+    prevBR = 0;
 
     // Reset Counters
     rebufferCount = 0; 
@@ -312,12 +364,15 @@
     seekCount = 0;
     changeLevelCounter = 0 ;
     playcounter = 0;
+    summation = 0;
+    fragChangeCount = 0;
+    currLevel = 0;
+    prevLevel = 0;
     
     // Reset Bools
     firstPlay = true;
     isBuffering = false;
-    bitrateMean = 0 ; 
-    summation = 0 ;
+
     // Reset innerHTML
     document.getElementById("rebufferCount").innerHTML = rebufferCount;
     document.getElementById("bufferDuration").innerHTML = bufferSeconds;
@@ -335,8 +390,11 @@
     document.getElementById("seekCount").innerHTML = 0;
     document.getElementById("playcounter").innerHTML = 0;
     document.getElementById("changeLevelCounter").innerHTML = 0;
+    document.getElementById("currentBitrate").innerHTML = 0;
+    document.getElementById("currentlevel").innerHTML = 0;
+    document.getElementById("bitrateMean").innerHTML = 0;
+    document.getElementById("levelchangehistory").innerHTML = "";
     document.getElementById("bitrateChange").innerHTML = "";
-    document.getElementById("bitrateMean").innerHTML = "0";
 
   }
 
