@@ -1,6 +1,6 @@
   // Variable Decleration
-  var bitrateMean = 0 ; 
-  var summation = 0 ;
+  var bitrateMean = 0; 
+  var summation = 0;
   // Timers
   var initialTime = 0;
   var vst = 0;
@@ -32,7 +32,9 @@
   var playcounter = 0; 
   var changeLevelCounter = 0;
   var summation = 0;
-  var fragChangeCount =0 ;
+  var fragChangeCount = 0;
+  var currLevel = 0;
+  var prevLevel = 0;
 
   // Bools
   var boolPaused = false; 
@@ -85,8 +87,15 @@
       // Level count listener
       hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
         changeLevelCounter++;
+        currLevel = data.level;
         document.getElementById("changeLevelCounter").innerHTML = changeLevelCounter;
+        document.getElementById("currentlevel").innerHTML = currLevel;
+        if (changeLevelCounter > 1) {
+          document.getElementById("levelchangehistory").innerHTML += ", " + prevLevel;
+        }
+        prevLevel = currLevel;
       });
+
 
       // Frag changed listner (for bitrate)
       hls.on(Hls.Events.FRAG_CHANGED, function (event, data) {
@@ -267,8 +276,7 @@
     decodedFrames = 0;
     droppedFrames = 0;
     fps = 0;
-
-     bitrateMean = 0 ; 
+    bitrateMean = 0 ; 
 
     
     // Reset Timers
@@ -300,14 +308,14 @@
     changeLevelCounter = 0 
     playcounter = 0; 
     summation = 0;
-    fragChangeCount = 0 ;
+    fragChangeCount = 0;
+    currLevel = 0;
+    prevLevel = 0;
     
     // Reset Bools
     firstPlay = true;
     isBuffering = false;
 
-    bitrateMean = 0 ; 
-    summation = 0 ;
     // Reset innerHTML
     document.getElementById("rebufferCount").innerHTML = 0;
     document.getElementById("bufferDuration").innerHTML = 0;
@@ -326,11 +334,15 @@
     document.getElementById("playcounter").innerHTML = 0;
     document.getElementById("changeLevelCounter").innerHTML = 0;
     document.getElementById("currentBitrate").innerHTML = 0;
+    document.getElementById("currentlevel").innerHTML = 0;
+    document.getElementById("bitrateMean").innerHTML = 0;
+    document.getElementById("levelchangehistory").innerHTML = "";
+    document.getElementById("bitrateChange").innerHTML = "";
     removeDataFromMyChart();
   }
     function ourHLSlisteners(){
       
-    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      hls.on(Hls.Events.MANIFEST_PARSED, function() {
         video.muted = true;
         video.play();
       });
@@ -360,6 +372,5 @@
         fragTimer += timeFragDur;
         prevBR = currBR;
       }); 
-
-  }
+    }
 
