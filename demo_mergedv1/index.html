@@ -111,6 +111,17 @@
           <video width="100%"  id="video" controls autoplay></video>
            <br>
           <canvas id="bufferedCanvas" width="720" height="15" class="videoCentered" onclick="onClickBufferedRange(event);" style="height: fit-content;"></canvas>
+          <select id="network" onchange = networkChange()>
+            <option value="None">None</option>
+            <option value="GPRS" >GPRS</option>
+            <option value="Regular 2G" >Regular 2G</option>
+            <option value="Good 2G" >Good 2G</option>
+            <option value="Regular 3G">Regular 3G</option>
+            <option value="Good 3G" >Good 3G</option>
+            <option value="Regular 4G" >Regular 4G</option>
+            <option value="DSL" >DSL</option>
+            <option value="WIFI" >WIFI</option>
+          </select>
           <div style="width: 500px; height: 250px;">
               <canvas id="bitrateGraphCSULA" ></canvas>
           </div>
@@ -336,6 +347,9 @@
     <!-- CSULA required libs -->
     <script type="text/javascript" src="Chart.js"></script>
     <script type="text/javascript" src="MyBitrateChart.js"></script>
+
+    <!-- dropdown list to app.js  -->
+    <script type="module" src="app.js"></script>
 
   </body>
 </html>
