@@ -1,0 +1,17 @@
+{
+  "name": "demo_mergedv1",
+  "version": "1.0.0",
+  "description": "\"Network Throttleing\"",
+  "main": "Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bandwidth-throttle-stream": "^1.1.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1"
+  }
+}
