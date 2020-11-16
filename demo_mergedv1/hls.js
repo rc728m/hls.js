@@ -13274,7 +13274,7 @@ var abr_controller_AbrController = /*#__PURE__*/function (_EventHandler) {
       // if we're playing back at the normal rate.
 
       var playbackRate = video && video.playbackRate !== 0 ? Math.abs(video.playbackRate) : 1.0;
-      var avgbw = this._bwEstimator ? this._bwEstimator.getEstimate() : config.abrEwmaDefaultEstimate; // bufferStarvationDelay is the wall-clock time left until the playback buffer is exhausted.
+      var avgbw = OurBandwidth; // CSULA
 
       var bufferStarvationDelay = (BufferHelper.bufferInfo(video, pos, config.maxBufferHole).end - pos) / playbackRate; // First, look to see if we can find a level matching with our avg bandwidth AND that could also guarantee no rebuffering at all
 

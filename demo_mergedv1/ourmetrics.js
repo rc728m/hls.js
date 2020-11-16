@@ -1,3 +1,15 @@
+ 
+//OurMetrics.js //on top 
+var  OurBandwidth = 52428800 ; //bps
+
+
+function networkChange(){
+  var e = document.getElementById("network");
+  OurBandwidth = parseInt(e.value) * 8;
+  // alert(OurBandwidth);
+  // console.log(OurBandwidth);
+}
+
   // Variable Decleration
   var bitrateMean = 0; 
   var summation = 0;
