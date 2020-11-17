@@ -58,6 +58,11 @@ function networkChange(){
   var firstPlay = true;  
   var fullScreenBool = false;
   var charts_initialized = false;
+  
+  //Things related to automatic bandwith based on files from value
+  var fr = new FileReader();
+  var inputSplit;
+  var fileIndex = 0;
 
   // Hls init
   var hls;   
@@ -279,6 +284,24 @@ function networkChange(){
          document.getElementById("Bandwidth").innerHTML = (hls.bandwidthEstimate/1048576).toFixed(0) + "Mbps";
       }
   },  10000);
+  
+  //File input reader for automatically switching bandwith
+  document.getElementById('inputfile').addEventListener('change', function() { 
+    fileIndex = 0;
+	fr.onload=function(){
+      inputSplit = fr.result.split('\n'); 
+	}  
+	fr.readAsText(this.files[0]);
+    setTimeout(autoBandwithChange, 1000);
+  });
+  
+  function autoBandwithChange(){
+    OurBandwith = parseInt(inputSplit[fileIndex]) * 8;
+    fileIndex++;
+    if(fileIndex < inputSplit.length){
+	  setTimeout(autoBandwithChange, 1000);
+    }
+  }
 
 
   function ResetOurMetricsAndVariables(){
