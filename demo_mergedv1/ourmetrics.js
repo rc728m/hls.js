@@ -1,5 +1,5 @@
  //OurMetrics.js //on top
- var OurBandwidth = 52428800; //bps
+ var OurBandwidth = 10000000; //bps
 
 
  function networkChange() {
@@ -311,7 +311,7 @@
 
  function autoBandwithChange() {
   console.log(`Bandwidth Value: ${inputSplit[fileIndex]}`)
-   OurBandwidth = parseInt(inputSplit[fileIndex]) * 8;
+   OurBandwidth = parseInt(inputSplit[fileIndex]) * 1024;
    fileIndex++;
    if (fileIndex < inputSplit.length) {
      setTimeout(autoBandwithChange, 1000);

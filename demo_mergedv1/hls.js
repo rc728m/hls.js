@@ -20450,13 +20450,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
  // import FetchLoader from './utils/fetch-loader';
 
 
-
-
-
-
-
-
-
 // If possible, keep hlsDefaultConfig shallow
 // It is cloned whenever a new Hls instance is created, by keeping the config
 // shallow the properties are cloned, and we don't end up manipulating the default
@@ -20475,15 +20468,15 @@ var hlsDefaultConfig = _objectSpread(_objectSpread({
   // used by cap-level-controller
   initialLiveManifestSize: 1,
   // used by stream-controller
-  maxBufferLength: 30,
+  maxBufferLength: 1,
   // used by stream-controller
-  maxBufferSize: 60 * 1000 * 1000,
+  maxBufferSize: 60 * 1000,
   // used by stream-controller
   maxBufferHole: 0.5,
   // used by stream-controller
   lowBufferWatchdogPeriod: 0.5,
   // used by stream-controller
-  highBufferWatchdogPeriod: 3,
+  highBufferWatchdogPeriod: 1,
   // used by stream-controller
   nudgeOffset: 0.1,
   // used by stream-controller
@@ -20503,7 +20496,7 @@ var hlsDefaultConfig = _objectSpread(_objectSpread({
   // used by buffer-controller
   liveBackBufferLength: Infinity,
   // used by buffer-controller
-  maxMaxBufferLength: 600,
+  maxMaxBufferLength: 1,
   // used by stream-controller
   enableWorker: true,
   // used by demuxer
@@ -20517,7 +20510,7 @@ var hlsDefaultConfig = _objectSpread(_objectSpread({
   // used by playlist-loader
   manifestLoadingMaxRetryTimeout: 64000,
   // used by playlist-loader
-  startLevel: void 0,
+  startLevel: 0,
   // used by level-controller
   levelLoadingTimeOut: 10000,
   // used by playlist-loader
@@ -20603,6 +20596,9 @@ var hlsDefaultConfig = _objectSpread(_objectSpread({
   audioTrackController:  true ? audio_track_controller : undefined,
   emeController:  true ? eme_controller : undefined
 });
+
+
+
 
 function timelineConfig() {
   return {
