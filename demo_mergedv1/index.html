@@ -27,12 +27,12 @@
           Merged_Demo_v1
         </h2>
 
-         
+
       </header>
     </div>
 
     <div class="main-container">
-       
+
       <div id="controls">
         <div class="demo-controls-wrapper">
           <select id="streamSelect" class="innerControls">
@@ -122,6 +122,12 @@
             <option value="5000">Regular 2G</option>
             <option value="4375">GPRS</option>
           </select>
+          <div>
+            <label>Turn on Recording: </label>
+            <input id="recordCheckbox" type="checkbox" />
+            &nbsp;
+            <button type="button" class="btn btn-xs btn-info" onclick="downloadXLSX()">Download XLSX</button>
+          </div>
           <p>When a new bitrate is choosen the Quality will be dropped after the entire buffered section of the previous bandwidth is played. Keep in mind that as soon as you lower the bandwidth's bitrate the player will begin to downloading quicker. </p>
           <div style="width: 500px; height: 250px;">
               <canvas id="bitrateGraphCSULA" ></canvas>
@@ -144,17 +150,17 @@
 		      <div>Duration: <span id="Duration">0</span></div>
 		      <div>Watched Percentage: <span id="watchedPercent">0</span></div>
           <div>Initial Startup Time: <span id="VSTinitial">0</span></div>
-          <div>Video Start Time: <span id="VSTcontinuous">0</span></div>           
+          <div>Video Start Time: <span id="VSTcontinuous">0</span></div>
           <div>Video Resolution: <span id="resolution">0</span></div>
           <div>Buffer Count: <span id="rebufferCount">0</span></div>
 		      <div>Buffer Size: <span id="bufferSize"></span></div>
           <div>Buffer Duration: <span id="bufferDuration">0</span></div>
-          <div>Total Rebuffer Time: <span id="totalRebufferTime">0</span></div>      
+          <div>Total Rebuffer Time: <span id="totalRebufferTime">0</span></div>
           <div>Rebuffer Ratio: <span id="demo">0</span></div>
           <div>Play Time: <span id="time3">0</span></div>
           <div>Pause Count: <span id="pauseCount">0</span></div>
           <div>Total Pause Time: <span id="totalPauseTime">0</span></div>
-          <div>Estimated Frames Per Second: <span id="Fps">0</span></div>      
+          <div>Estimated Frames Per Second: <span id="Fps">0</span></div>
           <div>Total Decoded Frames: <span id="DecodedFps">0</span></div>
           <div>Dropped Frames: <span id="DroppedFps">0</span></div>
           <div>Estimated Bandwidth: <span id="Bandwidth"></span></div>
@@ -172,7 +178,7 @@
           <div><mark>Bitrate Mean: <span id="bitrateMean">0</span></mark></div>
 		  <div><input type="file" name="inputfile" id="inputfile"> </div>
         </div>
-      </div>  
+      </div>
       <br>
       <br>
       <label class="center">Status:</label>
@@ -332,14 +338,14 @@
         <pre id="statisticsOut"></pre>
       </div>
 
-      
+
     </div>
     </div>
 
     <footer>
       <br><br><br><br><br><br>
     </footer>
-    
+
     <!-- Demo page required libs -->
     <script src="canvas.js"></script>
     <script src="metrics.js"></script>
@@ -351,7 +357,11 @@
     <script src="hls-demo.js"></script>
     <!-- CSULA required libs -->
     <script type="text/javascript" src="Chart.js"></script>
-    <script type="text/javascript" src="MyBitrateChart.js"></script> 
-    <script type="text/javascript" src="NetworkProfiles.js"></script>  
+    <script type="text/javascript" src="MyBitrateChart.js"></script>
+    <script type="text/javascript" src="NetworkProfiles.js"></script>
+    <script type="text/javascript" src="myexcel.js"></script>
+    <script type="text/javascript" src="RecordKeeper.js"></script>
+    <script type="text/javascript" src="FileSaver.js"></script>
+    <script type="text/javascript" src="jszip.js"></script>
   </body>
 </html>

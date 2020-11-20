@@ -1,4 +1,4 @@
- //OurMetrics.js //on top 
+ //OurMetrics.js //on top
  var OurBandwidth = 52428800; //bps
 
 
@@ -75,7 +75,7 @@
    liveBackBufferLength: 60 * 15,
    abrMaxWithRealBitrate: true
    // maxBufferLength: 0.1,
-   // maxBufferSize: 10*100,  
+   // maxBufferSize: 10*100,
 
  };
 
@@ -139,6 +139,7 @@
    if (!charts_initialized) {
      // Initialize Charts.
      inititializeMyBitrateChart(document.getElementById('bitrateGraphCSULA'), document.getElementById("video"));
+     getVideoSrc(videoSrc)
      charts_initialized = true;
    } else if (pauseBitrateInterval) {
      resumeBitrateInterval();
@@ -214,6 +215,7 @@
    document.getElementById("bufferSize").innerHTML = (bufferEndTime - bufferStartTime) + " (" + bufferStartTime + "s~" + bufferEndTime + "s)";
    document.getElementById("currentTime").innerHTML = video.currentTime + "s";
    document.getElementById("watchedPercent").innerHTML = ((video.currentTime / duration) * 100).toFixed(4) + "%";
+   recordMetrics()
  }
 
  window.setInterval(function getSessionTime() {
