@@ -102,6 +102,7 @@
                 Persist
                 <input name="config-persistence" id="config-persistence" type="checkbox">
             </label>
+            <div><input type="file" name="inputfile" id="inputfile"> </div>
             <button name="config-apply" onclick="applyConfigEditorValue()">Apply</button>
           </div>
         </div>
@@ -171,12 +172,11 @@
           <div>Full Screen Count: <span id="fullScreenCount">0</span></div>
           <div>Error Count: <span id="errorCount">0</span></div>
           <div>Level Changed Counter: <span id="changeLevelCounter">0</span></div>
-          <div><mark>Current Level: <span id="currentlevel">0</span></mark></div>
-          <div><mark>Level Change History: [Loading<span id="levelchangehistory"></span>]</mark></div>
-          <div><mark>Current Bitrate: <span id="currentBitrate">0</span></mark></div>
-          <div><mark>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</mark></div>
-          <div><mark>Bitrate Mean: <span id="bitrateMean">0</span></mark></div>
-		  <div><input type="file" name="inputfile" id="inputfile"> </div>
+          <div>Current Level: <span id="currentlevel">0</span></div>
+          <div>Level Change History: [Loading<span id="levelchangehistory"></span>]</div>
+          <div>Current Bitrate: <span id="currentBitrate">0</span></div>
+          <div>Bitrate Change History: [Loading<span id="bitrateChange"></span>]</div>
+          <div>Bitrate Mean: <span id="bitrateMean">0</span></div>
         </div>
       </div>
       <br>
@@ -349,7 +349,7 @@
     <!-- Demo page required libs -->
     <script src="canvas.js"></script>
     <script src="metrics.js"></script>
-    <script src="libs/jsonpack.js"></script>s
+    <script src="libs/jsonpack.js"></script>
 
     <!-- demo build -->
     <script src = "ourmetrics.js"></script>

@@ -7,8 +7,6 @@ th, td {
 }
 
 select {
-  position: relative;
-  left: 700px;
   padding: 2px 15px;
   background-color: rgb(181, 222, 255);
   font-weight: 600;
