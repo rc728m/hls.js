@@ -33,7 +33,7 @@ function recordMetrics() {
       playtime: document.getElementById("time3").innerHTML,
       rebuffRatio: document.getElementById("demo").innerHTML,
       estimatedBandwidth: document.getElementById("Bandwidth").innerHTML,
-      bitrateMean: document.getElementById("Bandwidth").innerHTML
+      bitrateMean: document.getElementById("bitrateMean").innerHTML
     })
   }
 }
